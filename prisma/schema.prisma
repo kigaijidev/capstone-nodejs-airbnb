@@ -14,7 +14,7 @@ model BinhLuan {
   ngay_binh_luan     DateTime?  @db.Timestamp(0)
   noi_dung           String?    @db.VarChar(255)
   sao_binh_luan      Int?
-  created_at         DateTime?  @db.Timestamp(0)
+  created_at         DateTime?  @default(now())
   Phong              Phong?     @relation(fields: [ma_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_1")
   NguoiDung          NguoiDung? @relation(fields: [ma_nguoi_binh_luan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_2")
 
@@ -29,7 +29,7 @@ model DatPhong {
   ngay_di        DateTime?  @db.Timestamp(0)
   so_luong_khach Int?
   ma_nguoi_dat   Int?
-  created_at     DateTime?  @db.Timestamp(0)
+  created_at     DateTime?  @default(now())
   Phong          Phong?     @relation(fields: [ma_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DatPhong_ibfk_1")
   NguoiDung      NguoiDung? @relation(fields: [ma_nguoi_dat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DatPhong_ibfk_2")
 
@@ -43,10 +43,10 @@ model NguoiDung {
   email      String?    @db.VarChar(255)
   pass_word  String?    @db.VarChar(255)
   phone      String?    @db.VarChar(255)
-  birth_day  String?    @db.VarChar(255)
+  birth_day  DateTime?  @db.Date
   gender     String?    @db.VarChar(255)
   role       String?    @db.VarChar(255)
-  created_at DateTime?  @db.Timestamp(0)
+  created_at DateTime?  @default(now())
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
 }
@@ -71,7 +71,7 @@ model Phong {
   ho_boi     Boolean?
   ban_ui     Boolean?
   hinh_anh   Boolean?
-  created_at DateTime?  @db.Timestamp(0)
+  created_at DateTime?  @default(now())
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
   ViTri      ViTri?     @relation(fields: [ma_vi_tri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_ibfk_1")
@@ -85,6 +85,6 @@ model ViTri {
   tinh_thanh String?   @db.VarChar(255)
   quoc_gia   String?   @db.VarChar(255)
   hinh_anh   String?   @db.VarChar(255)
-  created_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now())
   Phong      Phong[]
 }
