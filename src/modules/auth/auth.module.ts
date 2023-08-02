@@ -10,7 +10,9 @@ import { JwtUtil } from 'src/utils/jwt.util';
 
 @Module({
     imports:[
-        JwtModule.register({}),
+        JwtModule.register({
+            global: true
+        }),
         ConfigModule.forRoot({ isGlobal: true}),
     ],
     controllers: [AuthController],
