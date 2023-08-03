@@ -15,69 +15,62 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { CreateLocationDto } from './dto/create-location.dto';
+import { LocationService } from './location.service';
+import { UpdateLocationDto } from './dto/update-location';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { UploadImageDto } from 'src/common/dto/upload-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import slugify from 'slugify';
 import { PageDto } from 'src/common/dto/page.dto';
-import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { signUpDto } from '../auth/dto/signUp.dto';
 
-@Controller('api/users')
-@ApiTags('NguoiDung')
+@Controller('api/vi-tri')
+@ApiTags('ViTri')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-export class UsersController {
-
-    constructor(private readonly usersService: UsersService){}
+export class LocationController {
+    constructor( private readonly locationService: LocationService){}
 
     @Get()
     @HttpCode(HttpStatus.OK)
     getAll(): Promise<any> {
-        return this.usersService.getAll();
+        return this.locationService.getAll();
     }
 
     @Get('/phan-trang-tim-kiem')
     @HttpCode(HttpStatus.OK)
     getWithPagination(@Query() query: PageDto): Promise<any> {
-        return this.usersService.getWithPagination(query);
+        return this.locationService.getWithPagination(query);
     }
 
     @Get('/:id')
     @HttpCode(HttpStatus.OK)
     getOne(@Param('id') id: string): Promise<any> {
-        return this.usersService.getOne(Number(id));
-    }
-
-    @Get('/search/:tenNguoiDung')
-    @HttpCode(HttpStatus.OK)
-    getSearch(@Param('tenNguoiDung') name: string): Promise<any> {
-        return this.usersService.getSearch(name);
+        return this.locationService.getOne(Number(id));
     }
 
     @Put('/:id')
     @HttpCode(HttpStatus.OK)
-    @ApiBody({ type: UpdateUserDto })
+    @ApiBody({ type: UpdateLocationDto })
     update(
         @Param('id') id: string,
-        @Body() user: UpdateUserDto
+        @Body() location: UpdateLocationDto
     ): Promise<any> {
-        return this.usersService.update(Number(id), user);
+        return this.locationService.update(Number(id), location);
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @ApiBody({ type: signUpDto })
-    create(@Body() user: signUpDto): Promise<any> {
-        return this.usersService.create(user);
+    @ApiBody({ type: CreateLocationDto })
+    create(@Body() location: CreateLocationDto): Promise<any> {
+        return this.locationService.create(location);
     }
 
     @Delete('/:id')
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string): Promise<any> {
-        return this.usersService.delete(Number(id));
+        return this.locationService.delete(Number(id));
     }
 
     @HttpCode(HttpStatus.OK)
@@ -98,6 +91,6 @@ export class UsersController {
         @Param('id') id: string,
         @UploadedFile() file
     ): Promise<any> {
-        return this.usersService.uploadImage(Number(id), file);
+        return this.locationService.uploadImage(Number(id), file);
     }
 }

@@ -11,13 +11,14 @@ export class JwtUtil {
 
     async signToken(payload): Promise<string> {
         return await this.jwtService.signAsync(payload, {
-            secret: this.configService.get('SECRET_AIRBNB')
+            secret: this.configService.get('JWT_SECRET'),
+            expiresIn: this.configService.get('JWT_EXPIRESIN')
         })
     }
 
     async verifyToken(token: string): Promise<any> {
         return await this.jwtService.verifyAsync(token, {
-            secret: this.configService.get('SECRET_AIRBNB')
+            secret: this.configService.get('JWT_SECRET')
         })
     }
 }
