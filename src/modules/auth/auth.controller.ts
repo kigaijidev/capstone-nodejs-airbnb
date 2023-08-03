@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 import { signUpDto } from './dto/signUp.dto';
 import { signInDto } from './dto/signIn.dto';
 
-@Controller('auth')
+@Controller('api/auth')
 @ApiTags('Auth')
 export class AuthController {
     constructor(
@@ -17,21 +17,13 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     @ApiBody({ type: signUpDto })
     signUp(@Body() signUp: signUpDto): Promise<any> {
-        try {
-            return this.usersService.create(signUp);
-        } catch (err) {
-            throw new HttpException(err.message, err.status);
-        }
+        return this.usersService.create(signUp);
     }
 
     @Post('signin')
     @HttpCode(HttpStatus.OK)
     @ApiBody({ type: signInDto })
     signIn(@Body() signIn: signInDto): Promise<any> {
-        try {
-            return this.authService.signIn(signIn);
-        } catch (err) {
-            throw new HttpException(err.message, err.status);
-        }
+        return this.authService.signIn(signIn);
     }
 }

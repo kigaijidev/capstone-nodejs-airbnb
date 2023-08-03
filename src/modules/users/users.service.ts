@@ -34,7 +34,6 @@ export class UsersService {
         } catch (err) {
             throw new HttpException(err.message, err.status);
         }
-        
     }
 
     async getOne(userId: number): Promise<any> {
