@@ -3,6 +3,9 @@ import { CreateLocationDto } from './dto/create-location.dto';
 import prisma from 'src/configs/prisma.config';
 import { ResponseBody } from 'src/common/responseBody';
 import { UpdateLocationDto } from './dto/update-location';
+import { AuthUser } from 'src/common/auth/auth-user';
+import { PageDto } from 'src/common/dto/page.dto';
+import { PaginationBody } from 'src/common/paginationBody';
 
 @Injectable()
 export class LocationService {
@@ -49,6 +52,28 @@ export class LocationService {
         try {
             const locations = await prisma.viTri.findMany();
             return new ResponseBody( HttpStatus.OK, locations)
+        } catch (err) {
+            throw new HttpException(err.message, err.status);
+        }
+    }
+
+    async getWithPagination(pagination: PageDto): Promise<any> {
+        try {
+            const { keyword, pageIndex, pageSize} = pagination;
+            if(pageIndex <= 0 || pageSize <= 0){
+                throw new BadRequestException("pageIndex và pageSize phải lớn hơn 0");
+            }
+            const totalLocation = await prisma.viTri.count();
+            const locations = await prisma.viTri.findMany({
+                where: {
+                    ten_vi_tri: {
+                        contains: keyword
+                    }
+                },
+                skip: (pageIndex-1)*pageSize,
+                take: Number(pageSize)
+            });
+            return new PaginationBody( HttpStatus.OK, pageIndex, pageSize, totalLocation, keyword, locations);
         } catch (err) {
             throw new HttpException(err.message, err.status);
         }
@@ -114,21 +139,34 @@ export class LocationService {
         }
     }
 
-    // async delete(signUp: signUpDto): Promise<any> {
-    //     try {
-            
-    //         return 'Success';
-    //     } catch (err) {
-    //         throw new HttpException(err.message, err.status);
-    //     }
-    // }
+    async uploadImage(locationId: number, file: Express.Multer.File): Promise<any> {
+        try {
+            const locationExist = await prisma.viTri.findFirst({
+                where:{
+                    id: locationId
+                }
+            })
 
-    // async uploadImage(signUp: signUpDto): Promise<any> {
-    //     try {
-            
-    //         return 'Success';
-    //     } catch (err) {
-    //         throw new HttpException(err.message, err.status);
-    //     }
-    // }
+            if(!locationExist){
+                throw new NotFoundException();
+            }
+
+            const image = await prisma.viTri.update({
+                where:{
+                    id: locationId
+                },
+                data: { 
+                   hinh_anh: "/public/images/"+ file.filename
+                }
+            });
+
+            if(!image){
+                throw new BadRequestException();
+            }
+
+            return new ResponseBody( HttpStatus.OK, image);
+        } catch (err) {
+            throw new HttpException(err.message, err.status);
+        }
+    }
 }

@@ -12,6 +12,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+	dotenv.config();
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: ['error', 'warn'],
     });
