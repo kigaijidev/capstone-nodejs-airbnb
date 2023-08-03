@@ -30,6 +30,5 @@ export class UsersService {
         } catch (err) {
             throw new HttpException(err.message, err.status);
         }
-        
     }
 }
