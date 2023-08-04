@@ -6,6 +6,7 @@ import {
     HttpCode, 
     HttpStatus, 
     Param, 
+    Patch, 
     Post, 
     Put, 
     Query, 
@@ -27,8 +28,6 @@ import { PageDto } from 'src/common/dto/page.dto';
 
 @Controller('api/vi-tri')
 @ApiTags('ViTri')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class LocationController {
     constructor( private readonly locationService: LocationService){}
 
@@ -50,7 +49,9 @@ export class LocationController {
         return this.locationService.getOne(Number(id));
     }
 
-    @Put('/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Patch('/:id')
     @HttpCode(HttpStatus.OK)
     @ApiBody({ type: UpdateLocationDto })
     update(
@@ -60,6 +61,8 @@ export class LocationController {
         return this.locationService.update(Number(id), location);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiBody({ type: CreateLocationDto })
@@ -67,12 +70,16 @@ export class LocationController {
         return this.locationService.create(location);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Delete('/:id')
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string): Promise<any> {
         return this.locationService.delete(Number(id));
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     @Post('upload-hinh-vitri/:id')
     @ApiBody({ type: UploadImageDto})

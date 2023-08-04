@@ -1,6 +1,7 @@
+require('dotenv').config();
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import helmet from 'helmet';
 import * as morgan from 'morgan';
@@ -10,12 +11,15 @@ import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
 	dotenv.config();
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: ['error', 'warn'],
     });
+	const configService = app.get(ConfigService);
+	const APP_PORT = configService.get<number>('APP_PORT') || 3000;
 
     app.useGlobalPipes(new ValidationPipe());
 
@@ -36,6 +40,8 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('swagger', app, document);
 
-    await app.listen(3000);
+    await app.listen(APP_PORT, () => {
+		console.log(`Server starting with port :: ${APP_PORT}.`)
+	});
 }
 bootstrap();

@@ -170,18 +170,18 @@ export class UsersService {
                 throw new NotFoundException();
             }
 
-            // const image = await prisma.nguoiDung.update({
-            //     where:{
-            //         id: userId
-            //     },
-            //     data: { 
-            //        : "/public/images/"+ file.filename
-            //     }
-            // });
+            const image = await prisma.nguoiDung.update({
+                where:{
+                    id: userId
+                },
+                data: { 
+                   avatar: "/public/images/"+ file.filename
+                }
+            });
 
-            // if(!image){
-            //     throw new BadRequestException();
-            // }
+            if(!image){
+                throw new BadRequestException();
+            }
 
             return new ResponseBody( HttpStatus.OK, 'Success');
         } catch (err) {

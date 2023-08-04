@@ -6,6 +6,7 @@ import {
     HttpCode, 
     HttpStatus, 
     Param, 
+    Patch, 
     Post, 
     Put, 
     Query, 
@@ -57,7 +58,7 @@ export class UsersController {
         return this.usersService.getSearch(name);
     }
 
-    @Put('/:id')
+    @Patch('/:id')
     @HttpCode(HttpStatus.OK)
     @ApiBody({ type: UpdateUserDto })
     update(
