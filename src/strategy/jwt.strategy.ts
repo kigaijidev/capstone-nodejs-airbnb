@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
+import { AuthUser } from 'src/common/auth/auth-user';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
@@ -14,8 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             secretOrKey: config.get("JWT_SECRET"),
         });
     }
-
-    prisma = new PrismaClient();
 
     async validate(payload: any) {
         return payload;

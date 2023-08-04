@@ -47,8 +47,10 @@ model NguoiDung {
   gender     String?    @db.VarChar(255)
   role       String?    @db.VarChar(255)
   created_at DateTime?  @default(now())
+  avatar     String?    @db.VarChar(255)
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
+  Phong      Phong?
 }
 
 model Phong {
@@ -70,10 +72,12 @@ model Phong {
   do_xe      Boolean?
   ho_boi     Boolean?
   ban_ui     Boolean?
-  hinh_anh   Boolean?
+  hinh_anh   String?    @db.VarChar(255)
   created_at DateTime?  @default(now())
+  chu_phong  Int
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
+  NguoiDung  NguoiDung  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_FK")
   ViTri      ViTri?     @relation(fields: [ma_vi_tri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_ibfk_1")
 
   @@index([ma_vi_tri], map: "ma_vi_tri")
