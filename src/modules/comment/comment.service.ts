@@ -2,8 +2,6 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundExc
 import prisma from 'src/configs/prisma.config';
 import { ResponseBody } from 'src/common/responseBody';
 import { AuthUser } from 'src/common/auth/auth-user';
-import { PageDto } from 'src/common/dto/page.dto';
-import { PaginationBody } from 'src/common/paginationBody';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment';
 

@@ -16,7 +16,6 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CommentService } from './comment.service';
 import { UpdateCommentDto } from './dto/update-comment';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { AuthUser } from 'src/common/auth/auth-user';
 
 @Controller('api/binh-luan')
 @ApiTags('BinhLuan')
