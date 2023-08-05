@@ -5,6 +5,7 @@ import { RoomModule } from './modules/room/room.module';
 import { LocationModule } from './modules/location/location.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommentModule } from './modules/comment/comment.module';
+import { BookingModule } from './modules/booking/booking.module';
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import { CommentModule } from './modules/comment/comment.module';
         }),
         AuthModule,
         CommentModule,
+        BookingModule,
         UsersModule, 
         RoomModule,
         LocationModule
