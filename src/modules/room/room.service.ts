@@ -80,6 +80,20 @@ export class RoomService {
         }
     }
 
+    async getByCategory(categoryId: number): Promise<any> {
+        try {
+            const holderRooms = await prisma.phong.findMany({
+                where:{
+                    loai_phong: categoryId
+                }
+            });
+
+            return new ResponseBody( HttpStatus.OK, holderRooms);
+        } catch (err) {
+            throw new HttpException(err.message, err.status);
+        }
+    }
+
     async getAll(): Promise<any> {
         try {
             const rooms = await prisma.phong.findMany();

@@ -53,6 +53,12 @@ export class RoomController {
         return this.roomService.getByLocation(Number(locationId));
     }
 
+    @Get('/category/:maLoai')
+    @HttpCode(HttpStatus.OK)
+    getByCategory(@Param('maLoai') categoryId: string): Promise<any> {
+        return this.roomService.getByCategory(Number(categoryId));
+    }
+
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Patch('/:id')
