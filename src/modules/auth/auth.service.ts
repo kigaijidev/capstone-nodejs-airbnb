@@ -24,7 +24,7 @@ export class AuthService {
             });
     
             if(!holderUser){
-                throw new NotFoundException('User not found.');
+                throw new NotFoundException('Email not exist.');
             }
     
             const checkPassword = await this.authUtil.comparePassword(password, holderUser.pass_word);
