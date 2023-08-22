@@ -43,6 +43,16 @@ export class CommentService {
 
     async getByRoom(roomId: number): Promise<any> {
         try {
+            const roomExist = await prisma.phong.findFirst({
+                where:{
+                    id: roomId
+                }
+            })
+
+            if(!roomExist){
+                throw new NotFoundException('Room not exist.')
+            }
+
             const holderComment = await prisma.binhLuan.findMany({
                 where:{
                     ma_phong: roomId
@@ -56,10 +66,6 @@ export class CommentService {
                     }
                 }
             });
-
-            if(!holderComment){
-                throw new NotFoundException('Not Found Comment.');
-            }
 
             return new ResponseBody( HttpStatus.OK, holderComment);
         } catch (err) {
