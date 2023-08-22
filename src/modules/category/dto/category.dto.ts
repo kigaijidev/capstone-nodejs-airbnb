@@ -4,7 +4,7 @@ import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
 export class CategoryDto {
 
     @IsBoolean()
-    @ApiProperty({ type: Boolean, example: "boolean" })
+    @ApiProperty({ type: Boolean, example: false })
     trangThai: boolean;
     
     @IsString()

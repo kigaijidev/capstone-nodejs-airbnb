@@ -8,6 +8,7 @@ import { CommentModule } from './modules/comment/comment.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { PinModule } from './modules/pin/pin.module';
 import { CategoryModule } from './modules/category/category.module';
+import { AppController } from './app.controller';
 
 @Module({
     imports: [
@@ -23,7 +24,7 @@ import { CategoryModule } from './modules/category/category.module';
         LocationModule,
         CategoryModule,
     ],
-    controllers: [],
+    controllers: [AppController],
     providers: [],
 })
 export class AppModule {}

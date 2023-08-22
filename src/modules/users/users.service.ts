@@ -27,7 +27,8 @@ export class UsersService {
                     birth_day: birthday,
                     gender,
                     role,
-                    pass_word: hashPassword
+                    pass_word: hashPassword,
+                    is_deleted: false,
                 }
             });
             return 'Success';
@@ -88,6 +89,19 @@ export class UsersService {
         }
     }
 
+    async getAllDeleted(): Promise<any> {
+        try {
+            const users = await prisma.nguoiDung.findMany({
+                where:{
+                    is_deleted: true
+                }
+            });
+            return new ResponseBody( HttpStatus.OK, users)
+        } catch (err) {
+            throw new HttpException(err.message, err.status);
+        }
+    }
+
     async getWithPagination(pagination: PageDto): Promise<any> {
         try {
             const { keyword, pageIndex, pageSize} = pagination;
@@ -133,12 +147,41 @@ export class UsersService {
         }
     }
 
-    async delete(userId: number): Promise<any> {
+    async setDeleted(userId: number): Promise<any> {
         try {
 
             const userExist = await prisma.nguoiDung.findFirst({
                 where:{
                     id: userId
+                }
+            });
+
+            if(!userExist){
+                throw new BadRequestException('User not exist.');
+            }
+
+            await prisma.nguoiDung.update({
+                where:{
+                    id: userId
+                },
+                data:{
+                    is_deleted: true
+                }
+            })
+
+            return new ResponseBody( HttpStatus.OK, 'Success');
+        } catch (err) {
+            throw new HttpException(err.message, err.status);
+        }
+    }
+
+    async delete(userId: number): Promise<any> {
+        try {
+
+            const userExist = await prisma.nguoiDung.findFirst({
+                where:{
+                    id: userId,
+                    is_deleted: true
                 }
             });
 

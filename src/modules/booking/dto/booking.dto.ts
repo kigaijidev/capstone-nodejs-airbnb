@@ -8,11 +8,11 @@ export class BookingDto {
     maPhong: number;
     
     @IsDateString()
-    @ApiProperty({ type: Date, example: "2023-08-05T13:28:49.062Z" })
+    @ApiProperty({ type: Date, example: "2023-08-05" })
     ngayDen: Date;
     
     @IsDateString()
-    @ApiProperty({ type: Date, example: "2023-08-05T13:28:49.062Z" })
+    @ApiProperty({ type: Date, example: "2023-08-25" })
     ngayDi: Date;
 
     @IsNumber()

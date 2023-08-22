@@ -80,8 +80,8 @@ export class RoomDto {
     @ApiProperty({ type: Boolean, example: true })
     hoBoi: boolean;
 
-    @IsBoolean()
+    @IsNumber()
     @IsNotEmpty()
-    @ApiProperty({ type: Boolean, example: true })
-    banUi: boolean;
+    @ApiProperty({ type: Number, example: 0 })
+    loaiPhong: number;
 }

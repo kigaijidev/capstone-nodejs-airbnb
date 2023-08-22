@@ -16,16 +16,17 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CommentService } from './comment.service';
 import { UpdateCommentDto } from './dto/update-comment';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/binh-luan')
-@ApiTags('BinhLuan')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+@ApiTags(ApiTagsEnum.COMMENT)
 export class CommentController {
     constructor( private readonly commentService: CommentService){}
 
     @Get()
     @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     getAll(): Promise<any> {
         return this.commentService.getAll();
     }
@@ -38,6 +39,8 @@ export class CommentController {
 
     @Patch('/:id')
     @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiBody({ type: UpdateCommentDto })
     update(
         @Req() req,
@@ -49,6 +52,8 @@ export class CommentController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiBody({ type: CreateCommentDto })
     create(
         @Req() req,
@@ -58,6 +63,8 @@ export class CommentController {
     }
 
     @Delete('/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @HttpCode(HttpStatus.OK)
     delete(
         @Req() req,

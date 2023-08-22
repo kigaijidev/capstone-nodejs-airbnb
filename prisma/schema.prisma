@@ -15,8 +15,8 @@ model BinhLuan {
   noi_dung           String?    @db.VarChar(255)
   sao_binh_luan      Int?
   created_at         DateTime?  @default(now())
-  Phong              Phong?     @relation(fields: [ma_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_1")
-  NguoiDung          NguoiDung? @relation(fields: [ma_nguoi_binh_luan], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "BinhLuan_ibfk_2")
+  Phong              Phong?     @relation(fields: [ma_phong], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "BinhLuan_ibfk_1")
+  NguoiDung          NguoiDung? @relation(fields: [ma_nguoi_binh_luan], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "BinhLuan_ibfk_2")
 
   @@index([ma_nguoi_binh_luan], map: "ma_nguoi_binh_luan")
   @@index([ma_phong], map: "ma_phong")
@@ -25,13 +25,13 @@ model BinhLuan {
 model DatPhong {
   id             Int        @id @default(autoincrement())
   ma_phong       Int?
-  ngay_den       DateTime?  @db.Timestamp(0)
-  ngay_di        DateTime?  @db.Timestamp(0)
+  ngay_den       DateTime?  @db.Date
+  ngay_di        DateTime?  @db.Date
   so_luong_khach Int?
   ma_nguoi_dat   Int?
   created_at     DateTime?  @default(now())
-  Phong          Phong?     @relation(fields: [ma_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DatPhong_ibfk_1")
-  NguoiDung      NguoiDung? @relation(fields: [ma_nguoi_dat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DatPhong_ibfk_2")
+  Phong          Phong?     @relation(fields: [ma_phong], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "DatPhong_ibfk_1")
+  NguoiDung      NguoiDung? @relation(fields: [ma_nguoi_dat], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "DatPhong_ibfk_2")
 
   @@index([ma_nguoi_dat], map: "ma_nguoi_dat")
   @@index([ma_phong], map: "ma_phong")
@@ -46,8 +46,9 @@ model NguoiDung {
   birth_day  DateTime?   @db.Date
   gender     String?     @db.VarChar(255)
   role       String?     @db.VarChar(255)
-  created_at DateTime?   @default(now())
   avatar     String?     @db.VarChar(255)
+  is_deleted Boolean     @default(false)
+  created_at DateTime?   @default(now())
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
   GhimPhong  GhimPhong[]
@@ -72,7 +73,6 @@ model Phong {
   bep        Boolean?
   do_xe      Boolean?
   ho_boi     Boolean?
-  ban_ui     Boolean?
   hinh_anh   String?     @db.VarChar(255)
   chu_phong  Int
   loai_phong Int?
@@ -80,7 +80,7 @@ model Phong {
   BinhLuan   BinhLuan[]
   DatPhong   DatPhong[]
   GhimPhong  GhimPhong[]
-  NguoiDung  NguoiDung   @relation(fields: [chu_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_FK")
+  NguoiDung  NguoiDung   @relation(fields: [chu_phong], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Phong_FK")
   LoaiPhong  LoaiPhong?  @relation(fields: [loai_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_FK_1")
   ViTri      ViTri?      @relation(fields: [ma_vi_tri], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Phong_ibfk_1")
 
@@ -103,8 +103,8 @@ model GhimPhong {
   ma_nguoi_dung Int
   ma_phong      Int
   created_at    DateTime? @default(now())
-  NguoiDung     NguoiDung @relation(fields: [ma_nguoi_dung], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "GhimPhong_FK")
-  Phong         Phong     @relation(fields: [ma_phong], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "GhimPhong_FK_1")
+  NguoiDung     NguoiDung @relation(fields: [ma_nguoi_dung], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "GhimPhong_FK")
+  Phong         Phong     @relation(fields: [ma_phong], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "GhimPhong_FK_1")
 
   @@id([ma_nguoi_dung, ma_phong])
   @@index([ma_phong], map: "GhimPhong_FK_1")

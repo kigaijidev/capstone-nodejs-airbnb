@@ -4,9 +4,10 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../users/users.service';
 import { signUpDto } from './dto/signUp.dto';
 import { signInDto } from './dto/signIn.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/auth')
-@ApiTags('Auth')
+@ApiTags(ApiTagsEnum.AUTH)
 export class AuthController {
     constructor(
         private readonly authService: AuthService,

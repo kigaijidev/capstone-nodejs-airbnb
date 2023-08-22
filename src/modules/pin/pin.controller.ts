@@ -12,9 +12,10 @@ import {
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { PinService } from './pin.service';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/pin')
-@ApiTags('Ghim')
+@ApiTags(ApiTagsEnum.PIN)
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PinController {

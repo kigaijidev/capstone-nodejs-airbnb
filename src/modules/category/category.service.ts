@@ -7,10 +7,9 @@ import { CategoryDto } from './dto/category.dto';
 @Injectable()
 export class CategoryService {
     
-    async create(authUser: AuthUser, category: CategoryDto): Promise<any> {
+    async create(category: CategoryDto): Promise<any> {
         try {
             const { tenLoai, trangThai } = category;
-            const userId = authUser.id;
             if(!tenLoai || !trangThai){
                 throw new BadRequestException('Missing data required');
             }
@@ -34,7 +33,7 @@ export class CategoryService {
             const holderCategory = await prisma.loaiPhong.findFirst({
                 where:{
                     id: categoryId
-                }
+                },
             });
 
             if(!holderCategory){

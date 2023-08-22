@@ -16,9 +16,10 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { BookingService } from './booking.service';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingDto } from './dto/booking.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/dat-phong')
-@ApiTags('DatPhong')
+@ApiTags(ApiTagsEnum.BOOKING)
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class BookingController {

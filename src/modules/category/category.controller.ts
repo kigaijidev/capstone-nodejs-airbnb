@@ -15,9 +15,10 @@ import { ApiTags, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CategoryService } from './category.service';
 import { CategoryDto } from './dto/category.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/category')
-@ApiTags('LoaiPhong')
+@ApiTags(ApiTagsEnum.CATEGORY)
 export class CategoryController {
     constructor( private readonly categoryService: CategoryService){}
 
@@ -29,9 +30,9 @@ export class CategoryController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get('/:maLoai')
+    @Get('/:id')
     @HttpCode(HttpStatus.OK)
-    getOne(@Param('maLoai') categoryId: string): Promise<any> {
+    getOne(@Param('id') categoryId: string): Promise<any> {
         return this.categoryService.getOne(Number(categoryId));
     }
 
@@ -54,10 +55,10 @@ export class CategoryController {
     @HttpCode(HttpStatus.CREATED)
     @ApiBody({ type: CategoryDto })
     create(
-        @Req() req,
         @Body() category: CategoryDto
         ): Promise<any> {
-        return this.categoryService.create(req.user, category);
+            console.log(category)
+        return this.categoryService.create(category);
     }
 
     @UseGuards(JwtAuthGuard)

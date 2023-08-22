@@ -29,10 +29,10 @@ export class signUpDto {
     birthday: Date;
 
     @IsEnum(GenderEnum)
-    @ApiProperty({ type: GenderEnum, example: "string", enum: GenderEnum, enumName: GenderEnum.OTHER })
+    @ApiProperty({ type: GenderEnum, example: "string", enum: GenderEnum, enumName: 'Gender' })
     gender: string;
 
     @IsEnum(RoleEnum)
-    @ApiProperty({ type: RoleEnum, example: "string", enum: RoleEnum, enumName: RoleEnum.USER })
+    @ApiProperty({ type: RoleEnum, example: "string", enum: RoleEnum, enumName: 'Role' })
     role: string;
 }

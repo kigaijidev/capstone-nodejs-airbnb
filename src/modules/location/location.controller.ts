@@ -25,9 +25,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import slugify from 'slugify';
 import { PageDto } from 'src/common/dto/page.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/vi-tri')
-@ApiTags('ViTri')
+@ApiTags(ApiTagsEnum.LOCATION)
 export class LocationController {
     constructor( private readonly locationService: LocationService){}
 

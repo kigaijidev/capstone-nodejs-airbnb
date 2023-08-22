@@ -7,6 +7,7 @@ import { PageDto } from 'src/common/dto/page.dto';
 import { PaginationBody } from 'src/common/paginationBody';
 import { RoomDto } from './dto/room.dto';
 import { AuthUser } from 'src/common/auth/auth-user';
+import e from 'express';
 
 @Injectable()
 export class RoomService {
@@ -16,7 +17,7 @@ export class RoomService {
             const userId = authUser.id;
             const { 
                 tenPhong, khach, phongNgu, giuong, phongTam, moTa, giaTien, mayGiat, 
-                banLa, tivi, dieuHoa, wifi, bep, doXe, hoBoi, banUi, maViTri 
+                banLa, tivi, dieuHoa, wifi, bep, doXe, hoBoi, loaiPhong, maViTri 
             } = room;
 
             const holderRoom = await prisma.phong.create({
@@ -37,7 +38,7 @@ export class RoomService {
                     bep,
                     do_xe: doXe,
                     ho_boi: hoBoi,
-                    ban_ui: banUi,
+                    loai_phong: loaiPhong,
                     ma_vi_tri: maViTri,
                     created_at: new Date(),
                 }
@@ -53,6 +54,18 @@ export class RoomService {
             const holderRoom = await prisma.phong.findFirst({
                 where:{
                     id: roomId
+                },
+                include:{
+                    LoaiPhong:{
+                        select:{
+                            ten_loai: true
+                        }
+                    },
+                    ViTri:{
+                        select:{
+                            ten_vi_tri: true
+                        }
+                    }
                 }
             });
 
@@ -71,6 +84,18 @@ export class RoomService {
             const holderRooms = await prisma.phong.findMany({
                 where:{
                     ma_vi_tri: locationId
+                },
+                include:{
+                    LoaiPhong:{
+                        select:{
+                            ten_loai: true
+                        }
+                    },
+                    ViTri:{
+                        select:{
+                            ten_vi_tri: true
+                        }
+                    }
                 }
             });
 
@@ -85,6 +110,18 @@ export class RoomService {
             const holderRooms = await prisma.phong.findMany({
                 where:{
                     loai_phong: categoryId
+                },
+                include:{
+                    LoaiPhong:{
+                        select:{
+                            ten_loai: true
+                        }
+                    },
+                    ViTri:{
+                        select:{
+                            ten_vi_tri: true
+                        }
+                    }
                 }
             });
 
@@ -96,7 +133,20 @@ export class RoomService {
 
     async getAll(): Promise<any> {
         try {
-            const rooms = await prisma.phong.findMany();
+            const rooms = await prisma.phong.findMany({
+                include:{
+                    LoaiPhong:{
+                        select:{
+                            ten_loai: true
+                        }
+                    },
+                    ViTri:{
+                        select:{
+                            ten_vi_tri: true
+                        }
+                    }
+                }
+            });
             return new ResponseBody( HttpStatus.OK, rooms)
         } catch (err) {
             throw new HttpException(err.message, err.status);
@@ -116,6 +166,18 @@ export class RoomService {
                         contains: keyword
                     }
                 },
+                include:{
+                    LoaiPhong:{
+                        select:{
+                            ten_loai: true
+                        }
+                    },
+                    ViTri:{
+                        select:{
+                            ten_vi_tri: true
+                        }
+                    }
+                },
                 skip: (pageIndex-1)*pageSize,
                 take: Number(pageSize)
             });
@@ -130,7 +192,7 @@ export class RoomService {
             const userId = authUser.id;
             const { 
                 tenPhong, khach, phongNgu, giuong, phongTam, moTa, giaTien, mayGiat, 
-                banLa, tivi, dieuHoa, wifi, bep, doXe, hoBoi, banUi, maViTri 
+                banLa, tivi, dieuHoa, wifi, bep, doXe, hoBoi, loaiPhong, maViTri 
             } = room;
 
             const roomExist = await prisma.phong.findFirst({
@@ -165,7 +227,7 @@ export class RoomService {
                     bep,
                     do_xe: doXe,
                     ho_boi: hoBoi,
-                    ban_ui: banUi,
+                    loai_phong: loaiPhong,
                     ma_vi_tri: maViTri,
                 }
             });
@@ -188,6 +250,24 @@ export class RoomService {
 
             if(!userExist){
                 throw new UnauthorizedException();
+            }
+            
+            const roomUsing = await prisma.datPhong.findFirst({
+                where:{
+                    ngay_di:{
+                        gte: new Date()
+                    },
+                    ma_phong: roomId
+                },
+                orderBy:{
+                    ngay_di:{
+                        sort:'desc'
+                    }
+                }
+            })
+
+            if(roomUsing){
+                throw new BadRequestException(`Can't delete room using.`)
             }
 
             await prisma.phong.delete({

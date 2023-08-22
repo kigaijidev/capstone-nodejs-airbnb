@@ -23,9 +23,10 @@ import slugify from 'slugify';
 import { PageDto } from 'src/common/dto/page.dto';
 import { RoomService } from './room.service';
 import { RoomDto } from './dto/room.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/phong-thue')
-@ApiTags('Phong')
+@ApiTags(ApiTagsEnum.ROOM)
 export class RoomController {
     constructor(private readonly roomService: RoomService){}
 

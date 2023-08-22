@@ -22,9 +22,20 @@ export class AuthService {
                     email
                 }
             });
-    
+
             if(!holderUser){
                 throw new NotFoundException('Email not exist.');
+            }
+
+            if(holderUser.is_deleted){
+                await prisma.nguoiDung.update({
+                    where:{
+                        id: holderUser.id
+                    },
+                    data:{
+                        is_deleted: false
+                    }
+                })
             }
     
             const checkPassword = await this.authUtil.comparePassword(password, holderUser.pass_word);

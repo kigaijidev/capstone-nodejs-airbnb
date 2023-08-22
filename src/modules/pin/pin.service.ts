@@ -13,6 +13,16 @@ export class PinService {
             const holderPins = await prisma.ghimPhong.findMany({
                 where:{
                     ma_nguoi_dung: userId
+                },
+                include:{
+                    Phong:{
+                        select:{
+                            ten_phong: true,
+                            ma_vi_tri: true,
+                            loai_phong: true,
+                            hinh_anh: true,
+                        }
+                    }
                 }
             });
 
@@ -34,6 +44,17 @@ export class PinService {
 
             if(!roomExist){
                 throw new NotFoundException()
+            }
+
+            const pinExist = await prisma.ghimPhong.findFirst({
+                where: {
+                    ma_nguoi_dung: userId,
+                    ma_phong: roomId,
+                }
+            })
+
+            if(pinExist){
+                return new ResponseBody( HttpStatus.OK, "Pin existed.");
             }
 
             const holderPin = await prisma.ghimPhong.create({

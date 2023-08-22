@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import prisma from 'src/configs/prisma.config';
 import { ResponseBody } from 'src/common/responseBody';
 import { AuthUser } from 'src/common/auth/auth-user';
@@ -12,27 +12,67 @@ export class BookingService {
         try {
             const { maPhong, ngayDen, ngayDi, soLuongKhach } = booking;
             const userId = authUser.id;
+            const dateNow = Date.now();
+            const ngayDenNumber = new Date(ngayDen).getTime();
+            const ngayDiNumber = new Date(ngayDi).getTime();
+
+            console.log({
+                ngayDen: ngayDenNumber,
+                ngayDi: ngayDiNumber,
+                dateNow: dateNow
+            })
+            if((ngayDenNumber < dateNow) || (ngayDiNumber < dateNow) || (ngayDenNumber > ngayDiNumber)){
+                throw new BadRequestException('Require CheckIn greater CheckOut')
+            }
 
             const roomExist = await prisma.phong.findFirst({
                 where:{
                     id: maPhong
                 }
             })
+
             if(!roomExist){
                 throw new NotFoundException('Room not exist')
             }
-            const holderBooking = await prisma.datPhong.create({
+            
+            const conflictingBookings = await prisma.datPhong.findMany({
+                where: {
+                    ma_phong: maPhong,
+                    OR: [
+                        { 
+                            AND: [
+                                { ngay_den: { gte: new Date(ngayDen) } }, // Ngày đến của đặt phòng khác phải lớn hơn hoặc bằng ngày đến của đặt phòng mới
+                                { ngay_di: { lte: new Date(ngayDi) } }, // Ngày đi của đặt phòng khác phải nhỏ hơn hoặc bằng ngày đi của đặt phòng mới
+                            ],
+                        },
+                        { 
+                            AND: [
+                                { ngay_den: { lte: new Date(ngayDi) } }, // Ngày đến của đặt phòng khác phải nhỏ hơn hoặc bằng ngày đi của đặt phòng mới
+                                { ngay_di: { gte: new Date(ngayDen) } }, // Ngày đi của đặt phòng khác phải lớn hơn hoặc bằng ngày đến của đặt phòng mới
+                            ],
+                        },
+                    ],
+                },
+            });
+        
+            if (conflictingBookings.length > 0) {
+                throw new ConflictException('Booking conflict date.');
+            }
+
+            if(soLuongKhach > roomExist.khach){
+                throw new BadRequestException("Booking error: Number of guests exceeds the room's capacity.")
+            }
+
+            return new ResponseBody( HttpStatus.CREATED, await prisma.datPhong.create({
                 data:{
                     ma_phong: maPhong,
                     ma_nguoi_dat: userId,
-                    ngay_den: ngayDen,
-                    ngay_di: ngayDi,
+                    ngay_den: new Date(ngayDen),
+                    ngay_di: new Date(ngayDi),
                     so_luong_khach: soLuongKhach,
                     created_at: new Date()
                 }
-            });
-
-            return new ResponseBody( HttpStatus.CREATED, holderBooking);
+            }));
         } catch (err) {
             throw new HttpException(err.message, err.status);
         }
@@ -94,11 +134,26 @@ export class BookingService {
         try {
             const { ngayDen, ngayDi, soLuongKhach } = booking;
             const userId = authUser.id;
+
+            const dateNow = Date.now();
+            const ngayDenNumber = new Date(ngayDen).getTime();
+            const ngayDiNumber = new Date(ngayDi).getTime();
+
+            if((ngayDenNumber < dateNow) || (ngayDiNumber < dateNow) || (ngayDenNumber > ngayDiNumber)){
+                throw new BadRequestException('Require CheckIn greater CheckOut')
+            }
             
             const bookingExist = await prisma.datPhong.findFirst({
                 where:{
                     id: bookingId,
                     ma_nguoi_dat: userId
+                },
+                include: {
+                    Phong: {
+                        select:{
+                            khach: true,
+                        }
+                    }
                 }
             })
 
@@ -106,42 +161,72 @@ export class BookingService {
                 throw new UnauthorizedException();
             }
 
-            const holderBooking = await prisma.datPhong.update({
+            const conflictingBookings = await prisma.datPhong.findMany({
+                where: {
+                    ma_phong: bookingExist.ma_phong,
+                    NOT: {
+                        id: bookingId,
+                    },
+                    OR: [
+                        { 
+                            AND: [
+                                { ngay_den: { gte: new Date(ngayDen) } }, // Ngày đến của đặt phòng khác phải lớn hơn hoặc bằng ngày đến của đặt phòng mới
+                                { ngay_di: { lte: new Date(ngayDi) } }, // Ngày đi của đặt phòng khác phải nhỏ hơn hoặc bằng ngày đi của đặt phòng mới
+                            ],
+                        },
+                        { 
+                            AND: [
+                                { ngay_den: { lte: new Date(ngayDi) } }, // Ngày đến của đặt phòng khác phải nhỏ hơn hoặc bằng ngày đi của đặt phòng mới
+                                { ngay_di: { gte: new Date(ngayDen) } }, // Ngày đi của đặt phòng khác phải lớn hơn hoặc bằng ngày đến của đặt phòng mới
+                            ],
+                        },
+                    ],
+                },
+            });
+        
+            if (conflictingBookings.length > 0) {
+                throw new ConflictException('Booking conflict date.');
+            }
+
+            if(soLuongKhach > bookingExist.Phong.khach){
+                throw new BadRequestException("Booking error: Number of guests exceeds the room's capacity.")
+            }
+
+            return new ResponseBody( HttpStatus.OK, await prisma.datPhong.update({
                 where:{
                     id: bookingId,
                     ma_nguoi_dat: userId
                 },
                 data:{
-                    ngay_den: ngayDen,
-                    ngay_di: ngayDi
+                    ngay_den: new Date(ngayDen),
+                    ngay_di: new Date(ngayDi),
+                    so_luong_khach: soLuongKhach
                 }
-            });
-
-            return new ResponseBody( HttpStatus.OK, holderBooking);
+            }));
         } catch (err) {
             throw new HttpException(err.message, err.status);
         }
     }
 
-    async delete(authUser: AuthUser, commentId: number): Promise<any> {
+    async delete(authUser: AuthUser, bookingId: number): Promise<any> {
         try {
 
             const userId = authUser.id;
-            const holderComment = await prisma.binhLuan.findFirst({
+            const holderBooking = await prisma.datPhong.findFirst({
                 where:{
-                    id: commentId,
-                    ma_nguoi_binh_luan: userId
+                    id: bookingId,
+                    ma_nguoi_dat: userId
                 }
             });
 
-            if(!holderComment){
+            if(!holderBooking){
                 throw new UnauthorizedException();
             }
 
-            await prisma.binhLuan.delete({
+            await prisma.datPhong.delete({
                 where:{
-                    id: commentId,
-                    ma_nguoi_binh_luan: userId
+                    id: bookingId,
+                    ma_nguoi_dat: userId
                 }
             })
 

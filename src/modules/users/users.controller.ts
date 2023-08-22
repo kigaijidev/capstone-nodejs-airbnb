@@ -25,9 +25,10 @@ import { PageDto } from 'src/common/dto/page.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { signUpDto } from '../auth/dto/signUp.dto';
+import { ApiTagsEnum } from 'src/enums/apitags.enum';
 
 @Controller('api/users')
-@ApiTags('NguoiDung')
+@ApiTags(ApiTagsEnum.USERS)
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UsersController {
@@ -38,6 +39,12 @@ export class UsersController {
     @HttpCode(HttpStatus.OK)
     getAll(): Promise<any> {
         return this.usersService.getAll();
+    }
+
+    @Get('/deleted')
+    @HttpCode(HttpStatus.OK)
+    getAllDeleted(): Promise<any> {
+        return this.usersService.getAllDeleted();
     }
 
     @Get('/phan-trang-tim-kiem')
@@ -75,6 +82,12 @@ export class UsersController {
         return this.usersService.create(user);
     }
 
+    @Patch('/block/:id')
+    @HttpCode(HttpStatus.OK)
+    setDeleted(@Param('id') id: string): Promise<any> {
+        return this.usersService.setDeleted(Number(id));
+    }
+
     @Delete('/:id')
     @HttpCode(HttpStatus.OK)
     delete(@Param('id') id: string): Promise<any> {
@@ -82,7 +95,7 @@ export class UsersController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('upload-hinh-vitri/:id')
+    @Post('upload-hinh-avatar/:id')
     @ApiBody({ type: UploadImageDto})
     @ApiConsumes("multipart/form-data")
     @UseInterceptors(

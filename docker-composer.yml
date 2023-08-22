@@ -1,0 +1,23 @@
+version: '3'
+services:
+    server:
+        build:
+            dockerfile: Dockerfile
+        environment:
+            DATABASE_URL: "mysql://root:1234@localhost:3306/db_airbnb?schema=public"
+        volumes:
+            - /usr/src/app/node_modules
+        ports:
+            - 3001:3001
+    mysql:
+        image: mysql
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: 1234
+            MYSQL_DATABASE: db_airbnb
+        volumes:
+            - ./docker/mysql/data:/var/lib/mysql
+            - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+            - ./docker/mysql/initdata:/docker-entrypoint-initdb.d
+        ports:
+            - 3306:3306
